@@ -1,25 +1,25 @@
 #!/usr/bin/env python3
 """
-This module contains the function index_range that takes two integer arguments
-and returns a tuple containing a start index and an end index for a particular
-pagination page.
+This python script create a function that reads the number of
+pages in a book
 """
+
+
 from typing import Tuple
 
 
-def index_range(page: int, page_size: int) -> Tuple[int, int]:
+def index_range(page: int, page_size: int) -> Tuple[Tuple]:
+    """ Function that reads the number of a page
+    page: (int) - number of page
+    page_size: (int) - total page size
+
+    return: (tuple)
     """
-    Returns a tuple containing a start index and an end index for a particular
-    pagination page.
-
-    Args:
-        page (int): page number
-        page_size (int): number of items per page
-
-    Returns:
-        Tuple[int, int]: tuple containing a start index and an end index
-    """
-    if page <= 0 or page_size < 0:
-        return (-1, -1)
-
-    return (page_size * (page - 1), page_size * page)
+    if page <= 0 or page > page_size:
+        return None
+    if page_size == 0:
+        return (page, page_size)
+        # I can instead return page and page
+    page_start = (page - 1) * page_size
+    page_end = page_start + page_size
+    return (page_start, page_end)
