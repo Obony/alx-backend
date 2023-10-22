@@ -39,31 +39,47 @@ class Server:
             }
         return self.__indexed_dataset
 
-    def get_hyper_index(self, index: int = None,
-                        page_size: int = 10) -> Dict:
-        """ return all data"""
+    def get_hyper_index(self, index: int = None, page_size: int = 10) -> Dict:
+        """
+        Gets the correct page from the dataset
 
-        if index is None:
-            index = 0
+        Args:
+            index (int, optional): index of the page. Defaults to None.
+            page_size (int, optional): number of items per page.
+                                        Defaults to 10.
 
-        # validate the index
-        assert isinstance(index, int)
-        assert 0 <= index < len(self.indexed_dataset())
-        assert isinstance(page_size, int) and page_size > 0
+        Returns:
+            Dict: dictionnary of the following format:
+            {
+                "index": <first_current_index>,
+                "next_index": <next_index>,
+                "page_size": <page_size>,
+                "data": <page_of_the_dataset>
+            }
+        """
+        assert type(index) == int and index >= 0
+        indexed_dataset: Dict[int, List] = self.indexed_dataset()
+        assert index < len(indexed_dataset)
+        if page_size == 0:
+            return {
+                "index": index,
+                "next_index": index,
+                "page_size": 0,
+                "data": []
+            }
 
-        data = []  # collect all indexed data
-        next_index = index + page_size
-
-        for value in range(index, next_index):
-            if self.indexed_dataset().get(value):
-                data.append(self.indexed_dataset()[value])
-            else:
-                value += 1
-                next_index += 1
+        data: List[List] = []
+        i: int = index
+        p_size: int = page_size
+        while p_size > 0 and i < len(indexed_dataset):
+            if i in indexed_dataset.keys():
+                data.append(indexed_dataset[i])
+                p_size -= 1
+            i += 1
 
         return {
-            'index': index,
-            'data': data,
-            'page_size': page_size,
-            'next_index': next_index
+            "index": index,
+            "next_index": i if i < len(indexed_dataset) else None,
+            "page_size": len(data),
+            "data": data
         }
